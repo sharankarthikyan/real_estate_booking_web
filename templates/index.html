@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Real Estate Booking{% endblock %}
+
+{% block content %}
+<div class="jumbotron">
+  <h1 class="display-4">Welcome to Real Estate Booking</h1>
+  <p class="lead">Find and book your dream property with ease.</p>
+  <hr class="my-4">
+  <p>Browse our listings, create an account, and start your journey toward finding the perfect property.</p>
+  <div class="mt-4">
+    <a href="{{ url_for('property.index') }}" class="btn btn-primary btn-lg me-2">Browse Properties</a>
+    <a href="{{ url_for('user.new') }}" class="btn btn-outline-primary btn-lg">Create Account</a>
+  </div>
+</div>
+
+<div class="row mt-5">
+  <div class="col-md-4">
+    <div class="card mb-4">
+      <div class="card-body">
+        <h5 class="card-title">Find Properties</h5>
+        <p class="card-text">Search for apartments, houses, commercial buildings, and more.</p>
+        <a href="{{ url_for('property.index') }}" class="btn btn-sm btn-outline-primary">View Properties</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card mb-4">
+      <div class="card-body">
+        <h5 class="card-title">Register as a Renter</h5>
+        <p class="card-text">Create an account to book properties and earn reward points.</p>
+        <a href="{{ url_for('user.new') }}?type=renter" class="btn btn-sm btn-outline-primary">Register Now</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card mb-4">
+      <div class="card-body">
+        <h5 class="card-title">Join as an Agent</h5>
+        <p class="card-text">Register as a real estate agent to list and manage properties.</p>
+        <a href="{{ url_for('user.new') }}?type=agent" class="btn btn-sm btn-outline-primary">Join Now</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

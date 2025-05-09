@@ -1,0 +1,222 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Property - {{ property.location }}{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-8 offset-md-2">
+    <div class="card">
+      <div class="card-header">
+        <h3>Edit Property: {{ property.location }}</h3>
+      </div>
+      <div class="card-body">
+        <form action="{{ url_for('property.update', property_id=property.id) }}" method="POST">
+          <!-- Common Property Information -->
+          <div class="mb-4">
+            <h4>Basic Information</h4>
+            <div class="mb-3">
+              <label for="type" class="form-label">Property Type</label>
+              <input type="text" class="form-control" value="{{ property.type|capitalize }}" disabled>
+              <input type="hidden" name="type" value="{{ property.type }}">
+            </div>
+
+            <div class="mb-3">
+              <label for="description" class="form-label">Description</label>
+              <textarea class="form-control" id="description" name="description" rows="3"
+                required>{{ property.description }}</textarea>
+            </div>
+
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="location" class="form-label">Location (Address)</label>
+                <input type="text" class="form-control" id="location" name="location" required
+                  value="{{ property.location }}">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="city" class="form-label">City</label>
+                <input type="text" class="form-control" id="city" name="city" required value="{{ property.city }}">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="state" class="form-label">State</label>
+                <input type="text" class="form-control" id="state" name="state" required value="{{ property.state }}">
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="price" class="form-label">Price</label>
+              <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input type="number" class="form-control" id="price" name="price" min="0" step="0.01" required
+                  value="{{ property.price }}">
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="neighborhood_id" class="form-label">Neighborhood</label>
+              <select class="form-select" id="neighborhood_id" name="neighborhood_id">
+                <option value="">None</option>
+                {% for neighborhood in neighborhoods %}
+                <option value="{{ neighborhood.id }}" {% if property.neighborhood_id==neighborhood.id %}selected{% endif
+                  %}>
+                  {{ neighborhood.location }}, {{ neighborhood.city }}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="mb-3 form-check">
+              <input type="checkbox" class="form-check-input" id="is_avail" name="is_avail" value="True" {% if
+                property.is_avail %}checked{% endif %}>
+              <label class="form-check-label" for="is_avail">Available for Booking</label>
+            </div>
+          </div>
+
+          <!-- House Information (shown when type is house) -->
+          {% if property.type == 'house' and specific_data %}
+          <div id="house-info" class="property-specific-info mb-4">
+            <h4>House Details</h4>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="house_num_rooms" class="form-label">Number of Rooms</label>
+                <input type="number" class="form-control" id="house_num_rooms" name="num_rooms" min="1"
+                  value="{{ specific_data.num_rooms }}">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="house_square_footage" class="form-label">Square Footage</label>
+                <input type="number" class="form-control" id="house_square_footage" name="square_footage" min="1"
+                  value="{{ specific_data.square_footage }}">
+              </div>
+            </div>
+          </div>
+          {% endif %}
+
+          <!-- Apartment Information (shown when type is apartment) -->
+          {% if property.type == 'apartment' and specific_data %}
+          <div id="apartment-info" class="property-specific-info mb-4">
+            <h4>Apartment Details</h4>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="apartment_num_rooms" class="form-label">Number of Rooms</label>
+                <input type="number" class="form-control" id="apartment_num_rooms" name="num_rooms" min="1"
+                  value="{{ specific_data.num_rooms }}">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="apartment_square_footage" class="form-label">Square Footage</label>
+                <input type="number" class="form-control" id="apartment_square_footage" name="square_footage" min="1"
+                  value="{{ specific_data.square_footage }}">
+              </div>
+              <div class="col-md-12 mb-3">
+                <label for="building_type" class="form-label">Building Type</label>
+                <select class="form-select" id="building_type" name="building_type">
+                  <option value="High-rise" {% if specific_data.building_type=='High-rise' %}selected{% endif %}>
+                    High-rise</option>
+                  <option value="Mid-rise" {% if specific_data.building_type=='Mid-rise' %}selected{% endif %}>Mid-rise
+                  </option>
+                  <option value="Low-rise" {% if specific_data.building_type=='Low-rise' %}selected{% endif %}>Low-rise
+                  </option>
+                  <option value="Garden" {% if specific_data.building_type=='Garden' %}selected{% endif %}>Garden
+                  </option>
+                  <option value="Duplex" {% if specific_data.building_type=='Duplex' %}selected{% endif %}>Duplex
+                  </option>
+                  <option value="Studio" {% if specific_data.building_type=='Studio' %}selected{% endif %}>Studio
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+
+          <!-- Commercial Building Information (shown when type is commercial) -->
+          {% if property.type == 'commercial' and specific_data %}
+          <div id="commercial-info" class="property-specific-info mb-4">
+            <h4>Commercial Building Details</h4>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="commercial_square_footage" class="form-label">Square Footage</label>
+                <input type="number" class="form-control" id="commercial_square_footage" name="square_footage" min="1"
+                  value="{{ specific_data.square_footage }}">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="business_type" class="form-label">Business Type</label>
+                <select class="form-select" id="business_type" name="business_type">
+                  <option value="Office" {% if specific_data.business_type=='Office' %}selected{% endif %}>Office
+                  </option>
+                  <option value="Retail" {% if specific_data.business_type=='Retail' %}selected{% endif %}>Retail
+                  </option>
+                  <option value="Industrial" {% if specific_data.business_type=='Industrial' %}selected{% endif %}>
+                    Industrial</option>
+                  <option value="Mixed Use" {% if specific_data.business_type=='Mixed Use' %}selected{% endif %}>Mixed
+                    Use</option>
+                  <option value="Restaurant" {% if specific_data.business_type=='Restaurant' %}selected{% endif %}>
+                    Restaurant</option>
+                  <option value="Hotel" {% if specific_data.business_type=='Hotel' %}selected{% endif %}>Hotel</option>
+                  <option value="Other" {% if specific_data.business_type=='Other' %}selected{% endif %}>Other</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+
+          <!-- Vacation Home Information (shown when type is vacation) -->
+          {% if property.type == 'vacation' and specific_data %}
+          <div id="vacation-info" class="property-specific-info mb-4">
+            <h4>Vacation Home Details</h4>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="vacation_square_footage" class="form-label">Square Footage</label>
+                <input type="number" class="form-control" id="vacation_square_footage" name="square_footage" min="1"
+                  value="{{ specific_data.square_footage }}">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="max_occupancy" class="form-label">Maximum Occupancy</label>
+                <input type="number" class="form-control" id="max_occupancy" name="max_occupancy" min="1"
+                  value="{{ specific_data.max_occupancy }}">
+              </div>
+              <div class="col-md-12 mb-3">
+                <label for="amenities" class="form-label">Amenities</label>
+                <textarea class="form-control" id="amenities" name="amenities"
+                  rows="3">{{ specific_data.amenities }}</textarea>
+                <small class="form-text text-muted">List amenities separated by commas (e.g., Pool, Hot Tub,
+                  Wi-Fi)</small>
+              </div>
+              <div class="col-md-12 mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="is_seasonal" name="is_seasonal" value="True" {% if
+                  specific_data.is_seasonal %}checked{% endif %}>
+                <label class="form-check-label" for="is_seasonal">Seasonal Availability</label>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+
+          <!-- Land Information (shown when type is land) -->
+          {% if property.type == 'land' and specific_data %}
+          <div id="land-info" class="property-specific-info mb-4">
+            <h4>Land Details</h4>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="acreage" class="form-label">Acreage</label>
+                <input type="number" class="form-control" id="acreage" name="acreage" min="0.01" step="0.01"
+                  value="{{ specific_data.acreage }}">
+              </div>
+              <div class="col-md-12 mb-3">
+                <label for="utilities" class="form-label">Available Utilities</label>
+                <textarea class="form-control" id="utilities" name="utilities"
+                  rows="3">{{ specific_data.utilities }}</textarea>
+                <small class="form-text text-muted">List utilities separated by commas (e.g., Water, Electricity,
+                  Gas)</small>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+
+          <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary">Update Property</button>
+            <a href="{{ url_for('property.detail', property_id=property.id) }}"
+              class="btn btn-outline-secondary">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

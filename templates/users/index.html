@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block title %}Users - Real Estate Booking{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1>Users</h1>
+  <a href="{{ url_for('user.new') }}" class="btn btn-primary">Add New User</a>
+</div>
+
+{% if users %}
+<div class="card">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for user in users %}
+          <tr>
+            <td>{{ user.id }}</td>
+            <td>{{ user.name }}</td>
+            <td>{{ user.email }}</td>
+            <td>{% if user.is_agent %}Agent{% else %}Renter{% endif %}</td>
+            <td>
+              <a href="{{ url_for('user.detail', user_id=user.id) }}" class="btn btn-sm btn-info">View</a>
+              <a href="{{ url_for('user.edit', user_id=user.id) }}" class="btn btn-sm btn-warning">Edit</a>
+              <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal"
+                data-bs-target="#deleteUserModal{{ user.id }}">Delete</button>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Delete User Modals -->
+{% for user in users %}
+<div class="modal fade" id="deleteUserModal{{ user.id }}" tabindex="-1"
+  aria-labelledby="deleteUserModalLabel{{ user.id }}" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteUserModalLabel{{ user.id }}">Delete User</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete this user? This action cannot be undone.</p>
+        <p><strong>Note:</strong> Users with existing bookings cannot be deleted.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <form id="deleteUserForm{{ user.id }}" action="{{ url_for('user.delete', user_id=user.id) }}" method="POST">
+          <button type="button" class="btn btn-danger delete-confirm-btn"
+            data-form-id="deleteUserForm{{ user.id }}">Delete User</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+{% else %}
+<div class="alert alert-info">
+  No users found. <a href="{{ url_for('user.new') }}">Create a new user</a>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // Handle delete confirmation buttons
+    const deleteConfirmBtns = document.querySelectorAll('.delete-confirm-btn');
+
+    deleteConfirmBtns.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const formId = this.getAttribute('data-form-id');
+        if (formId) {
+          const form = document.getElementById(formId);
+          if (form) {
+            form.submit();
+          }
+        }
+      });
+    });
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block title %}Properties - Real Estate Booking{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1>Properties</h1>
+  <a href="{{ url_for('property.new') }}" class="btn btn-primary">Add New Property</a>
+</div>
+
+<div class="row mb-4">
+  <div class="col-md-6">
+    <div class="input-group">
+      <input type="text" class="form-control" placeholder="Search properties..." id="search-input">
+      <button class="btn btn-outline-secondary" type="button" id="search-button">Search</button>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="d-flex justify-content-end">
+      <select class="form-select w-auto" id="property-type-filter">
+        <option value="all">All Types</option>
+        <option value="house">Houses</option>
+        <option value="apartment">Apartments</option>
+        <option value="commercial">Commercial Buildings</option>
+        <option value="vacation">Vacation Homes</option>
+        <option value="land">Land</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+{% if properties %}
+<div class="row">
+  {% for property in properties %}
+  <div class="col-md-4 mb-4">
+    <div class="card h-100">
+      <div class="card-header bg-light">
+        <div class="d-flex justify-content-between">
+          <span
+            class="badge rounded-pill {% if property.type == 'house' %}bg-primary{% elif property.type == 'apartment' %}bg-info{% elif property.type == 'commercial' %}bg-warning{% elif property.type == 'vacation' %}bg-success{% else %}bg-secondary{% endif %}">
+            {{ property.type.capitalize() }}
+          </span>
+          <span class="badge rounded-pill {% if property.is_avail %}bg-success{% else %}bg-danger{% endif %}">
+            {% if property.is_avail %}Available{% else %}Not Available{% endif %}
+          </span>
+        </div>
+      </div>
+      <div class="card-body">
+        <h5 class="card-title">{{ property.location }}</h5>
+        <h6 class="card-subtitle mb-2 text-muted">{{ property.city }}, {{ property.state }}</h6>
+        <p class="card-text">{{ property.description|truncate(100) }}</p>
+        <div class="d-flex justify-content-between align-items-center">
+          <span class="fs-5 fw-bold">${{ property.price }}</span>
+          <a href="{{ url_for('property.detail', property_id=property.id) }}"
+            class="btn btn-sm btn-outline-primary">View Details</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-info">
+  No properties found. <a href="{{ url_for('property.new') }}">Add a new property</a>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const searchInput = document.getElementById('search-input');
+    const searchButton = document.getElementById('search-button');
+    const typeFilter = document.getElementById('property-type-filter');
+
+    searchButton.addEventListener('click', function () {
+      filterProperties();
+    });
+
+    searchInput.addEventListener('keyup', function (event) {
+      if (event.key === 'Enter') {
+        filterProperties();
+      }
+    });
+
+    typeFilter.addEventListener('change', function () {
+      filterProperties();
+    });
+
+    function filterProperties() {
+      const searchTerm = searchInput.value.toLowerCase();
+      const propertyType = typeFilter.value;
+
+      const propertyCards = document.querySelectorAll('.col-md-4');
+
+      propertyCards.forEach(function (card) {
+        const title = card.querySelector('.card-title').textContent.toLowerCase();
+        const subtitle = card.querySelector('.card-subtitle').textContent.toLowerCase();
+        const description = card.querySelector('.card-text').textContent.toLowerCase();
+        const type = card.querySelector('.badge').textContent.toLowerCase();
+
+        const matchesSearch = title.includes(searchTerm) ||
+          subtitle.includes(searchTerm) ||
+          description.includes(searchTerm);
+
+        const matchesType = propertyType === 'all' || type === propertyType;
+
+        if (matchesSearch && matchesType) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+  });
+</script>
+{% endblock %}

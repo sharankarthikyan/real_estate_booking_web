@@ -1,0 +1,157 @@
+/* Main Styles */
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  flex: 1;
+}
+
+footer {
+  margin-top: auto;
+}
+
+/* Card Styles */
+.card {
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  transition: all 0.3s ease;
+  margin-bottom: 1.5rem;
+}
+
+.card:hover {
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  transform: translateY(-5px);
+}
+
+.card-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+  padding: 0.75rem 1.25rem;
+}
+
+.card-header h3 {
+  margin-bottom: 0;
+}
+
+/* Form Styles */
+.form-control:focus,
+.form-select:focus {
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Button Styles */
+.btn-primary {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+}
+
+.btn-primary:hover {
+  background-color: #0b5ed7;
+  border-color: #0a58ca;
+}
+
+.btn-warning {
+  color: #000;
+}
+
+.btn-warning:hover {
+  color: #000;
+}
+
+.btn-info {
+  color: #fff;
+  background-color: #0dcaf0;
+  border-color: #0dcaf0;
+}
+
+.btn-info:hover {
+  color: #fff;
+  background-color: #31d2f2;
+  border-color: #25cff2;
+}
+
+/* Home Page Styles */
+.jumbotron {
+  padding: 2rem 1rem;
+  background-color: #f8f9fa;
+  border-radius: 0.3rem;
+  margin-bottom: 2rem;
+}
+
+/* Detail Page Styles */
+.detail-header {
+  margin-bottom: 2rem;
+}
+
+.detail-header h1 {
+  margin-bottom: 0.5rem;
+}
+
+.detail-section {
+  margin-bottom: 2rem;
+}
+
+.detail-label {
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+}
+
+.detail-value {
+  margin-bottom: 1rem;
+}
+
+/* Property Card Styles */
+.badge {
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+/* Table Styles */
+.table {
+  vertical-align: middle;
+}
+
+.table th {
+  font-weight: 600;
+  background-color: #f8f9fa;
+}
+
+/* Modal Styles */
+.modal-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.modal-footer {
+  background-color: #f8f9fa;
+  border-top: 1px solid #dee2e6;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .jumbotron {
+    padding: 1rem;
+  }
+
+  .card-title {
+    font-size: 1.25rem;
+  }
+
+  .detail-header {
+    flex-direction: column;
+    align-items: flex-start !important;
+  }
+
+  .detail-header .btn-group {
+    margin-top: 1rem;
+    width: 100%;
+  }
+
+  .detail-header .btn {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+}

@@ -1,0 +1,227 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ property.location }} - Property Details{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-12 mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+      <h1>{{ property.location }}</h1>
+      <div>
+        <a href="{{ url_for('property.edit', property_id=property.id) }}" class="btn btn-warning">Edit Property</a>
+        <a href="{{ url_for('property.index') }}" class="btn btn-outline-secondary">Back to List</a>
+        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deletePropertyModal">
+          Delete Property
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+    <div class="card mb-4">
+      <div class="card-header">
+        <div class="d-flex justify-content-between">
+          <h3>Property Details</h3>
+          <span class="badge rounded-pill {% if property.is_avail %}bg-success{% else %}bg-danger{% endif %}">
+            {% if property.is_avail %}Available{% else %}Not Available{% endif %}
+          </span>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="mb-3">
+          <h5>Location</h5>
+          <p>{{ property.location }}<br>
+            {{ property.city }}, {{ property.state }}</p>
+        </div>
+
+        <div class="mb-3">
+          <h5>Description</h5>
+          <p>{{ property.description }}</p>
+        </div>
+
+        <div class="mb-3">
+          <h5>Price</h5>
+          <p class="fs-4">${{ property.price }}</p>
+        </div>
+
+        <div class="mb-3">
+          <h5>Property Type</h5>
+          <p>{{ property.type|capitalize }}</p>
+        </div>
+
+        {% if property.neighborhood_location %}
+        <div class="mb-3">
+          <h5>Neighborhood</h5>
+          <p>{{ property.neighborhood_location }}, {{ property.neighborhood_city }}, {{ property.neighborhood_state }}
+          </p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card mb-4">
+      <div class="card-header">
+        <h3>Specific Details</h3>
+      </div>
+      <div class="card-body">
+        {% if property.type == 'house' and specific_data %}
+        <div class="mb-3">
+          <h5>Number of Rooms</h5>
+          <p>{{ specific_data.num_rooms }}</p>
+        </div>
+        <div class="mb-3">
+          <h5>Square Footage</h5>
+          <p>{{ specific_data.square_footage }} sq ft</p>
+        </div>
+        {% elif property.type == 'apartment' and specific_data %}
+        <div class="mb-3">
+          <h5>Number of Rooms</h5>
+          <p>{{ specific_data.num_rooms }}</p>
+        </div>
+        <div class="mb-3">
+          <h5>Square Footage</h5>
+          <p>{{ specific_data.square_footage }} sq ft</p>
+        </div>
+        <div class="mb-3">
+          <h5>Building Type</h5>
+          <p>{{ specific_data.building_type }}</p>
+        </div>
+        {% elif property.type == 'commercial' and specific_data %}
+        <div class="mb-3">
+          <h5>Square Footage</h5>
+          <p>{{ specific_data.square_footage }} sq ft</p>
+        </div>
+        <div class="mb-3">
+          <h5>Business Type</h5>
+          <p>{{ specific_data.business_type }}</p>
+        </div>
+        {% elif property.type == 'vacation' and specific_data %}
+        <div class="mb-3">
+          <h5>Square Footage</h5>
+          <p>{{ specific_data.square_footage }} sq ft</p>
+        </div>
+        <div class="mb-3">
+          <h5>Maximum Occupancy</h5>
+          <p>{{ specific_data.max_occupancy }} people</p>
+        </div>
+        <div class="mb-3">
+          <h5>Amenities</h5>
+          <p>{{ specific_data.amenities }}</p>
+        </div>
+        <div class="mb-3">
+          <h5>Seasonal Availability</h5>
+          <p>{% if specific_data.is_seasonal %}Yes{% else %}No{% endif %}</p>
+        </div>
+        {% elif property.type == 'land' and specific_data %}
+        <div class="mb-3">
+          <h5>Acreage</h5>
+          <p>{{ specific_data.acreage }} acres</p>
+        </div>
+        <div class="mb-3">
+          <h5>Utilities</h5>
+          <p>{{ specific_data.utilities }}</p>
+        </div>
+        {% else %}
+        <p>No specific details available for this property type.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header">
+        <h3>Actions</h3>
+      </div>
+      <div class="card-body">
+        {% if property.is_avail %}
+        <a href="#" class="btn btn-primary btn-lg w-100 mb-3">Book Now</a>
+        {% endif %}
+        <a href="{{ url_for('property.edit', property_id=property.id) }}" class="btn btn-warning btn-lg w-100 mb-3">Edit
+          Property</a>
+        <button type="button" class="btn btn-danger btn-lg w-100 mb-3" data-bs-toggle="modal"
+          data-bs-target="#deletePropertyModal">
+          Delete Property
+        </button>
+        <a href="#" class="btn btn-outline-secondary w-100">Contact Agent</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% if bookings %}
+<div class="row">
+  <div class="col-md-12 mb-4">
+    <div class="card">
+      <div class="card-header">
+        <h3>Booking History</h3>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Renter</th>
+                <th>Booking Date</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Amount</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for booking in bookings %}
+              <tr>
+                <td>{{ booking.id }}</td>
+                <td>{{ booking.renter_name }}</td>
+                <td>{{ booking.booking_date.strftime('%Y-%m-%d') }}</td>
+                <td>{{ booking.start_date.strftime('%Y-%m-%d') }}</td>
+                <td>{{ booking.end_date.strftime('%Y-%m-%d') }}</td>
+                <td>${{ booking.total_amount }}</td>
+                <td>
+                  <span class="badge rounded-pill 
+                                        {% if booking.is_canceled %}bg-danger
+                                        {% elif booking.status == 'confirmed' %}bg-success
+                                        {% elif booking.status == 'pending' %}bg-warning
+                                        {% else %}bg-secondary{% endif %}">
+                    {% if booking.is_canceled %}Canceled
+                    {% else %}{{ booking.status|capitalize }}{% endif %}
+                  </span>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- Delete Property Modal -->
+<div class="modal fade" id="deletePropertyModal" tabindex="-1" aria-labelledby="deletePropertyModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deletePropertyModalLabel">Delete Property</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete this property? This action cannot be undone.</p>
+        <p><strong>Note:</strong> Properties with existing bookings cannot be deleted.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <form action="{{ url_for('property.delete', property_id=property.id) }}" method="POST">
+          <button type="submit" class="btn btn-danger">Delete Property</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

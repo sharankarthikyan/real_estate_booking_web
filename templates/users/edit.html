@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit User - {{ user.name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-8 offset-md-2">
+    <div class="card">
+      <div class="card-header">
+        <h3>Edit User: {{ user.name }}</h3>
+      </div>
+      <div class="card-body">
+        <form action="{{ url_for('user.update', user_id=user.id) }}" method="POST">
+          <div class="mb-3">
+            <label for="name" class="form-label">Name</label>
+            <input type="text" class="form-control" id="name" name="name" value="{{ user.name }}" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" required>
+          </div>
+
+          <div class="mb-3">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="is_agent" name="is_agent" value="True" {% if
+                user.is_agent %}checked{% endif %}>
+              <label class="form-check-label" for="is_agent">
+                Register as an Agent
+              </label>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <h4>Address Information</h4>
+            {% if addresses %}
+            <input type="hidden" name="primary_address_id" value="{{ addresses[0].id }}">
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="street" class="form-label">Street</label>
+                <input type="text" class="form-control" id="street" name="street" value="{{ addresses[0].street }}"
+                  required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="city" class="form-label">City</label>
+                <input type="text" class="form-control" id="city" name="city" value="{{ addresses[0].city }}" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="state" class="form-label">State</label>
+                <input type="text" class="form-control" id="state" name="state" value="{{ addresses[0].state }}"
+                  required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="zip_code" class="form-label">ZIP Code</label>
+                <input type="text" class="form-control" id="zip_code" name="zip_code"
+                  value="{{ addresses[0].zip_code }}" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="country" class="form-label">Country</label>
+                <input type="text" class="form-control" id="country" name="country" value="{{ addresses[0].country }}"
+                  required>
+              </div>
+            </div>
+            {% else %}
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="street" class="form-label">Street</label>
+                <input type="text" class="form-control" id="street" name="street" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="city" class="form-label">City</label>
+                <input type="text" class="form-control" id="city" name="city" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="state" class="form-label">State</label>
+                <input type="text" class="form-control" id="state" name="state" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="zip_code" class="form-label">ZIP Code</label>
+                <input type="text" class="form-control" id="zip_code" name="zip_code" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="country" class="form-label">Country</label>
+                <input type="text" class="form-control" id="country" name="country" required value="United States">
+              </div>
+            </div>
+            {% endif %}
+          </div>
+
+          <!-- Agent Information (shown when is_agent is checked) -->
+          <div id="agent-info" class="mb-3" style="display: {% if user.is_agent %}block{% else %}none{% endif %};">
+            <h4>Agent Information</h4>
+            <div class="mb-3">
+              <label for="job_title" class="form-label">Job Title</label>
+              <input type="text" class="form-control" id="job_title" name="job_title"
+                value="{{ agent_data.job_title if agent_data else '' }}">
+            </div>
+            <div class="mb-3">
+              <label for="real_estate_agency" class="form-label">Real Estate Agency</label>
+              <input type="text" class="form-control" id="real_estate_agency" name="real_estate_agency"
+                value="{{ agent_data.real_estate_agency if agent_data else '' }}">
+            </div>
+            <div class="mb-3">
+              <label for="contact_info" class="form-label">Contact Information</label>
+              <textarea class="form-control" id="contact_info" name="contact_info"
+                rows="3">{{ agent_data.contact_info if agent_data else '' }}</textarea>
+            </div>
+          </div>
+
+          <!-- Renter Information (shown when is_agent is not checked) -->
+          <div id="renter-info" class="mb-3" style="display: {% if not user.is_agent %}block{% else %}none{% endif %};">
+            <h4>Renter Information</h4>
+            <div class="mb-3">
+              <label for="desired_move_in_date" class="form-label">Desired Move-in Date</label>
+              <input type="date" class="form-control" id="desired_move_in_date" name="desired_move_in_date"
+                value="{{ renter_data.desired_move_in_date.strftime('%Y-%m-%d') if renter_data and renter_data.desired_move_in_date else '' }}">
+            </div>
+            <div class="mb-3">
+              <label for="preferred_location" class="form-label">Preferred Location</label>
+              <input type="text" class="form-control" id="preferred_location" name="preferred_location"
+                value="{{ renter_data.preferred_location if renter_data else '' }}">
+            </div>
+            <div class="mb-3">
+              <label for="budget" class="form-label">Budget</label>
+              <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input type="number" class="form-control" id="budget" name="budget" min="0" step="0.01"
+                  value="{{ renter_data.budget if renter_data else '0' }}">
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="reward_points" class="form-label">Reward Points</label>
+              <input type="number" class="form-control" id="reward_points" name="reward_points" min="0"
+                value="{{ renter_data.reward_points if renter_data and renter_data.reward_points else '0' }}">
+            </div>
+          </div>
+
+          <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary">Update User</button>
+            <a href="{{ url_for('user.detail', user_id=user.id) }}" class="btn btn-outline-secondary">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const isAgentCheckbox = document.getElementById('is_agent');
+    const agentInfo = document.getElementById('agent-info');
+    const renterInfo = document.getElementById('renter-info');
+
+    isAgentCheckbox.addEventListener('change', function () {
+      if (this.checked) {
+        agentInfo.style.display = 'block';
+        renterInfo.style.display = 'none';
+      } else {
+        agentInfo.style.display = 'none';
+        renterInfo.style.display = 'block';
+      }
+    });
+  });
+</script>
+{% endblock %}
