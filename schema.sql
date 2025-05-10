@@ -3,6 +3,7 @@ CREATE TABLE "User" (
     ID SERIAL PRIMARY KEY,
     email VARCHAR(255),
     name VARCHAR(255),
+    password_hash VARCHAR(255),
     is_agent BOOLEAN
 );
 
